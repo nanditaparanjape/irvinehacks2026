@@ -5,7 +5,10 @@ import { useGameStore } from "@/store/useGameStore";
 import { KeyCap } from "@/components/KeyCap";
 
 const CUE_COUNT = 4;
-const NO_SHARK_TIMEOUT_MS = 3000; // NO SHARK: after 3s without press, advance with red outline
+const SHARK_TIMEOUT_MS = 5000; // SHARK: must press within 5s or wrong + 5s penalty
+const NO_SHARK_TIMEOUT_MS = 2000; // NO SHARK: 2s without press = correct (0 added)
+const WRONG_PRESS_PENALTY_SEC = 0.5; // NO SHARK: penalty when they press
+const SHARK_MISSED_PENALTY_SEC = 5.0; // SHARK: penalty when they don't press in time
 const GO_PROBABILITY = 0.8;
 const FEEDBACK_MS = 220;
 const BLANK_BEFORE_NEXT_MS = 380;
@@ -43,7 +46,11 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
   const handledRef = useRef(false);
   const blankTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noSharkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sharkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrongPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongPressBlankRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sharkAdvanceBlankRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noSharkAdvanceBlankRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentCue = sequence[cueIndex];
   const isGo = currentCue === "go"; // SHARK: must press. NO SHARK: must not press.
@@ -54,13 +61,64 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
     cueStartRef.current = performance.now();
   }, [cueIndex]);
 
-  // NO SHARK only: after 3s without press, show red outline and advance
+  // NO SHARK: after 2s without press = correct (0 added), advance
   useEffect(() => {
     if (isGo) return;
     noSharkTimeoutRef.current = setTimeout(() => {
       if (handledRef.current) return;
       handledRef.current = true;
-      setFeedbackFlash("red"); // timeout = missed = red outline
+      totalSecondsRef.current += 0; // correct: no time added
+      setFeedbackFlash("green");
+      onFeedbackChange?.("correct");
+
+      setTimeout(() => {
+        setFeedbackFlash(null);
+        onFeedbackChange?.(null);
+        setBlankBeforeNext(true);
+        const nextIndex = cueIndex + 1;
+        noSharkAdvanceBlankRef.current = setTimeout(() => {
+          noSharkAdvanceBlankRef.current = null;
+          setBlankBeforeNext(false);
+          if (nextIndex >= CUE_COUNT) {
+            if (onTutorialComplete) {
+              setTimeout(() => {
+                onTutorialComplete();
+                onComplete?.(performance.now() - roundStartRef.current);
+              }, 200);
+            } else {
+              addScore(totalSecondsRef.current, 0);
+              setTimeout(() => {
+                nextTurn();
+                onComplete?.(performance.now() - roundStartRef.current);
+              }, 200);
+            }
+          } else {
+            setCueIndex(nextIndex);
+          }
+        }, BLANK_BEFORE_NEXT_MS);
+      }, FEEDBACK_MS);
+    }, NO_SHARK_TIMEOUT_MS);
+
+    return () => {
+      if (noSharkTimeoutRef.current) {
+        clearTimeout(noSharkTimeoutRef.current);
+        noSharkTimeoutRef.current = null;
+      }
+      if (blankTimerRef.current) {
+        clearTimeout(blankTimerRef.current);
+        blankTimerRef.current = null;
+      }
+    };
+  }, [cueIndex, isGo, addScore, nextTurn, onComplete, onTutorialComplete]);
+
+  // SHARK: must press within 5s; if not, wrong + 5s penalty, then advance
+  useEffect(() => {
+    if (!isGo) return;
+    sharkTimeoutRef.current = setTimeout(() => {
+      if (handledRef.current) return;
+      handledRef.current = true;
+      totalSecondsRef.current += SHARK_MISSED_PENALTY_SEC;
+      setFeedbackFlash("red");
       onFeedbackChange?.("incorrect");
 
       setTimeout(() => {
@@ -89,12 +147,12 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
           }
         }, BLANK_BEFORE_NEXT_MS);
       }, FEEDBACK_MS);
-    }, NO_SHARK_TIMEOUT_MS);
+    }, SHARK_TIMEOUT_MS);
 
     return () => {
-      if (noSharkTimeoutRef.current) {
-        clearTimeout(noSharkTimeoutRef.current);
-        noSharkTimeoutRef.current = null;
+      if (sharkTimeoutRef.current) {
+        clearTimeout(sharkTimeoutRef.current);
+        sharkTimeoutRef.current = null;
       }
       if (blankTimerRef.current) {
         clearTimeout(blankTimerRef.current);
@@ -113,13 +171,17 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
       const elapsedSec = (performance.now() - cueStartRef.current) / 1000;
 
       if (isGo) {
-        // SHARK: press = correct
+        // SHARK: press = correct; cancel 5s timeout, add reaction time
+        if (sharkTimeoutRef.current) {
+          clearTimeout(sharkTimeoutRef.current);
+          sharkTimeoutRef.current = null;
+        }
         totalSecondsRef.current += elapsedSec;
         setFeedbackFlash("green");
         onFeedbackChange?.("correct");
         advanceToNextCue();
       } else {
-        // NO SHARK: press = wrong — cancel the 3s timeout; show wrong feedback then advance (no blank phase to avoid stuck screen)
+        // NO SHARK: press = wrong — cancel 2s timeout; +0.5s penalty, show wrong, advance
         if (noSharkTimeoutRef.current) {
           clearTimeout(noSharkTimeoutRef.current);
           noSharkTimeoutRef.current = null;
@@ -128,7 +190,7 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
           clearTimeout(wrongPressTimeoutRef.current);
           wrongPressTimeoutRef.current = null;
         }
-        totalSecondsRef.current += 2.5;
+        totalSecondsRef.current += WRONG_PRESS_PENALTY_SEC;
         setShowWrongPopup(true);
         setFeedbackFlash("red");
         onFeedbackChange?.("incorrect");
@@ -137,23 +199,28 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
           setFeedbackFlash(null);
           setShowWrongPopup(false);
           onFeedbackChange?.(null);
-          setBlankBeforeNext(false);
-          if (cueIndex + 1 >= CUE_COUNT) {
-            if (onTutorialComplete) {
-              setTimeout(() => {
-                onTutorialComplete();
-                onComplete?.(performance.now() - roundStartRef.current);
-              }, 200);
+          setBlankBeforeNext(true);
+          const nextIndex = cueIndex + 1;
+          wrongPressBlankRef.current = setTimeout(() => {
+            wrongPressBlankRef.current = null;
+            setBlankBeforeNext(false);
+            if (nextIndex >= CUE_COUNT) {
+              if (onTutorialComplete) {
+                setTimeout(() => {
+                  onTutorialComplete();
+                  onComplete?.(performance.now() - roundStartRef.current);
+                }, 200);
+              } else {
+                addScore(totalSecondsRef.current, 0);
+                setTimeout(() => {
+                  nextTurn();
+                  onComplete?.(performance.now() - roundStartRef.current);
+                }, 200);
+              }
             } else {
-              addScore(totalSecondsRef.current, 0);
-              setTimeout(() => {
-                nextTurn();
-                onComplete?.(performance.now() - roundStartRef.current);
-              }, 200);
+              setCueIndex(nextIndex);
             }
-          } else {
-            setCueIndex((i) => i + 1);
-          }
+          }, BLANK_BEFORE_NEXT_MS);
         }, FEEDBACK_MS);
       }
     };
@@ -164,10 +231,11 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
         setShowWrongPopup(false);
         onFeedbackChange?.(null);
         setBlankBeforeNext(true);
-        blankTimerRef.current = setTimeout(() => {
-          blankTimerRef.current = null;
+        const nextIndex = cueIndex + 1;
+        sharkAdvanceBlankRef.current = setTimeout(() => {
+          sharkAdvanceBlankRef.current = null;
           setBlankBeforeNext(false);
-          if (cueIndex + 1 >= CUE_COUNT) {
+          if (nextIndex >= CUE_COUNT) {
             if (onTutorialComplete) {
               setTimeout(() => {
                 onTutorialComplete();
@@ -181,7 +249,7 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }:
               }, 200);
             }
           } else {
-            setCueIndex((i) => i + 1);
+            setCueIndex(nextIndex);
           }
         }, BLANK_BEFORE_NEXT_MS);
       }, FEEDBACK_MS);
