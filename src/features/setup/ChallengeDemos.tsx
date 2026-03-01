@@ -98,19 +98,27 @@ export function DeepDiveDemo() {
   );
 }
 
-/** Non-interactive: SHARK and NO SHARK side by side */
+/** Non-interactive: shark and seaweed (no shark) side by side */
 export function SharkAttackDemo() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-6">
+    <div className="flex flex-wrap items-center justify-center gap-8">
       <div className="flex flex-col items-center gap-2">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-cyan-500 text-sm font-bold tracking-wide text-white shadow-lg">
-          SHARK
+        <div className="flex h-32 w-32 items-center justify-center rounded-full bg-cyan-500 shadow-lg md:h-36 md:w-36">
+          <img
+            src="/shark.svg"
+            alt="Shark"
+            className="h-[70%] w-[70%] object-contain"
+          />
         </div>
         <span className="text-xs text-cyan-200">Press Space</span>
       </div>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-600 text-sm font-bold tracking-wide text-white shadow-lg">
-          NO SHARK
+        <div className="flex h-32 w-32 items-center justify-center rounded-full bg-cyan-500 shadow-lg md:h-36 md:w-36">
+          <img
+            src="/seaweed.svg"
+            alt="No shark"
+            className="h-[70%] w-[70%] object-contain"
+          />
         </div>
         <span className="text-xs text-cyan-200">Don&apos;t press</span>
       </div>

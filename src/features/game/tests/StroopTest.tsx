@@ -18,9 +18,10 @@ type Feedback = "correct" | "incorrect" | null;
 export interface StroopTestProps {
   onComplete?: (elapsedMs: number) => void;
   onTutorialComplete?: () => void;
+  onFeedbackChange?: (feedback: "correct" | "incorrect" | null) => void;
 }
 
-export const StroopTest = ({ onComplete, onTutorialComplete }: StroopTestProps) => {
+export const StroopTest = ({ onComplete, onTutorialComplete, onFeedbackChange }: StroopTestProps) => {
   const addScore = useGameStore((state) => state.addScore);
   const nextTurn = useGameStore((state) => state.nextTurn);
   const isTutorial = useGameStore((state) => state.isTutorial);
@@ -70,6 +71,7 @@ export const StroopTest = ({ onComplete, onTutorialComplete }: StroopTestProps) 
         (userSaysMatch && actualMatch) || (!userSaysMatch && !actualMatch);
 
       finishedRef.current = true;
+      onFeedbackChange?.(isCorrect ? "correct" : "incorrect");
 
       const elapsedMs = performance.now() - startTimeRef.current;
       const elapsedSeconds = elapsedMs / 1000;
@@ -103,23 +105,11 @@ export const StroopTest = ({ onComplete, onTutorialComplete }: StroopTestProps) 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [addScore, nextTurn, onComplete, onTutorialComplete, stimulus.isMatch]);
-
-  const feedbackRingClass =
-    feedback === "correct"
-      ? "ring-4 ring-cyan-500"
-      : feedback === "incorrect"
-        ? "ring-4 ring-red-500 shadow-[0_0_24px_rgba(239,68,68,0.5)]"
-        : "ring-1 ring-cyan-500/30";
+  }, [addScore, nextTurn, onComplete, onTutorialComplete, onFeedbackChange, stimulus.isMatch]);
 
   return (
-    <div
-      className={`relative flex h-40 flex-col items-center justify-center gap-4 rounded-xl border border-cyan-500/30 bg-cyan-950/40 px-6 text-center backdrop-blur-sm transition-all duration-200 md:h-52 ${feedbackRingClass}`}
-    >
-      {feedback === "incorrect" && (
-        <div className="absolute inset-0 z-10 rounded-xl bg-red-500/30" aria-hidden />
-      )}
-      <div className="text-5xl font-bold tracking-tight">
+    <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 px-6 text-center transition-all duration-200">
+      <div className="text-5xl font-bold tracking-tight md:text-6xl">
         <span className={COLOR_CLASS[stimulus.color]}>{stimulus.text}</span>
       </div>
     </div>

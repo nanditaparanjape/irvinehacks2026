@@ -25,7 +25,7 @@ const PREVIEW_CONTENT: Record<RoundTestType, { title: string; instruction: strin
   gonogo: {
     title: "Shark Attack",
     instruction:
-      "Press SPACE if SHARK present!",
+      "Press SPACE if a shark is present!",
   },
 };
 
@@ -54,7 +54,7 @@ export function TutorialPreview({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex w-full flex-col gap-5 rounded-2xl border-2 border-cyan-500/40 bg-white/10 p-5"
+      className="flex w-full max-w-xl min-w-0 flex-col gap-5 rounded-2xl border-2 border-cyan-500/40 bg-white/10 p-6"
     >
       <div className="rounded-xl border border-cyan-500/40 bg-white/10 p-4">
         <h2 className="font-bubbly text-center text-2xl font-semibold text-cyan-300 md:text-3xl">

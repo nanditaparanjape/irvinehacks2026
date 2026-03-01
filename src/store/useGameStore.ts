@@ -138,6 +138,8 @@ export const TUTORIAL_TEST_TYPES: RoundTestType[] = [
   "gonogo",
 ];
 
+const FIRST_8_MUST_HAVE_ALL_TYPES = 8;
+
 function generateRoundTestTypes(turnOrder: Player[]): RoundTestType[] {
   const result: RoundTestType[] = [];
   const p1Count: Record<RoundTestType, number> = {
@@ -157,15 +159,32 @@ function generateRoundTestTypes(turnOrder: Player[]): RoundTestType[] {
     const player = turnOrder[i] ?? 1;
     const counts = player === 1 ? p1Count : p2Count;
 
-    const candidates = (TESTS as RoundTestType[]).filter(
+    let candidates = (TESTS as RoundTestType[]).filter(
       (t) => counts[t] < PER_PLAYER_COUNTS[t],
     );
     const prevTest = result[i - 1];
-    const noBackToBack =
+    let options =
       prevTest != null
         ? candidates.filter((t) => t !== prevTest)
         : candidates;
-    const options = noBackToBack.length > 0 ? noBackToBack : candidates;
+    if (options.length === 0) options = candidates;
+
+    // Demo: ensure first 8 rounds include all 4 game types at least once
+    if (i < FIRST_8_MUST_HAVE_ALL_TYPES) {
+      const usedInFirst8 = new Set(result);
+      const missingInFirst8 = (TESTS as RoundTestType[]).filter(
+        (t) => !usedInFirst8.has(t),
+      );
+      const roundsLeftInFirst8 = FIRST_8_MUST_HAVE_ALL_TYPES - i;
+      if (
+        missingInFirst8.length > 0 &&
+        roundsLeftInFirst8 <= missingInFirst8.length
+      ) {
+        const mustInclude = options.filter((t) => missingInFirst8.includes(t));
+        if (mustInclude.length > 0) options = mustInclude;
+      }
+    }
+
     const chosen =
       options[Math.floor(Math.random() * options.length)] ?? "stroop";
 

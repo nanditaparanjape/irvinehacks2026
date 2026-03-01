@@ -72,21 +72,21 @@ export function TutorialCompleteScreen() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="onboarding-modal mx-auto flex w-full max-w-lg flex-col rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-2xl md:p-10"
+        className="mx-auto flex w-full max-w-2xl flex-col rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-8 shadow-2xl md:p-10"
       >
         <div className="flex flex-col items-center gap-8 text-center">
-          <h1 className="font-bubbly text-3xl font-black uppercase tracking-wide text-cyan-300 md:text-4xl">
+          <h1 className="font-bubbly text-3xl font-black uppercase tracking-wide text-cyan-100 md:text-4xl">
             Tutorial Complete!
           </h1>
 
           <div className="space-y-6 text-left">
-            <p className="text-base leading-relaxed text-white/90">
-              The mission is calculated based on <strong className="text-cyan-200">Speed</strong> and{" "}
-              <strong className="text-cyan-200">Accuracy</strong>. Every millisecond counts, but every
+            <p className="text-lg leading-relaxed text-cyan-100/95">
+              The mission is calculated based on <strong className="text-cyan-100">Speed</strong> and{" "}
+              <strong className="text-cyan-100">Accuracy</strong>. Every millisecond counts, but every
               mistake adds a time penalty to your score.
             </p>
-            <p className="text-base leading-relaxed text-white/90">
-              Whoever gets the <strong className="text-cyan-200">fastest overall reaction time</strong>{" "}
+            <p className="text-lg leading-relaxed text-cyan-100/95">
+              Whoever gets the <strong className="text-cyan-100">fastest overall reaction time</strong>{" "}
               at the end wins the race.
             </p>
           </div>

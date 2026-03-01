@@ -5,7 +5,7 @@ import { useGameStore } from "@/store/useGameStore";
 import { KeyCap } from "@/components/KeyCap";
 
 const CUE_COUNT = 4;
-const CUE_DURATION_MS = 2000; // Only used for SHARK: success = no press for this long
+const NO_SHARK_TIMEOUT_MS = 3000; // NO SHARK: after 3s without press, advance with red outline
 const GO_PROBABILITY = 0.8;
 const FEEDBACK_MS = 220;
 const BLANK_BEFORE_NEXT_MS = 380;
@@ -16,9 +16,10 @@ type FeedbackFlash = "green" | "red" | null;
 export interface GoNoGoTestProps {
   onComplete?: (elapsedMs: number) => void;
   onTutorialComplete?: () => void;
+  onFeedbackChange?: (feedback: "correct" | "incorrect" | null) => void;
 }
 
-export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) => {
+export const GoNoGoTest = ({ onComplete, onTutorialComplete, onFeedbackChange }: GoNoGoTestProps) => {
   const addScore = useGameStore((state) => state.addScore);
   const nextTurn = useGameStore((state) => state.nextTurn);
   const isTutorial = useGameStore((state) => state.isTutorial);
@@ -33,7 +34,6 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
 
   const [cueIndex, setCueIndex] = useState(0);
   const [feedbackFlash, setFeedbackFlash] = useState<FeedbackFlash>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [showWrongPopup, setShowWrongPopup] = useState(false);
   const [blankBeforeNext, setBlankBeforeNext] = useState(false);
 
@@ -42,9 +42,11 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
   const totalSecondsRef = useRef(0);
   const handledRef = useRef(false);
   const blankTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noSharkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentCue = sequence[cueIndex];
-  const isGo = currentCue === "go";
+  const isGo = currentCue === "go"; // SHARK: must press. NO SHARK: must not press.
 
   useEffect(() => {
     if (cueIndex === 0) roundStartRef.current = performance.now();
@@ -52,19 +54,19 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
     cueStartRef.current = performance.now();
   }, [cueIndex]);
 
-  // Timeout only for "No shark" (!isGo): success = didn't press for CUE_DURATION_MS.
-  // For SHARK (isGo): no timeout — we wait until they press Space.
+  // NO SHARK only: after 3s without press, show red outline and advance
   useEffect(() => {
     if (isGo) return;
-    const timeout = setTimeout(() => {
+    noSharkTimeoutRef.current = setTimeout(() => {
       if (handledRef.current) return;
       handledRef.current = true;
-      setFeedbackFlash("green");
+      setFeedbackFlash("red"); // timeout = missed = red outline
+      onFeedbackChange?.("incorrect");
 
       setTimeout(() => {
         setFeedbackFlash(null);
-        setMessage(null);
         setShowWrongPopup(false);
+        onFeedbackChange?.(null);
         setBlankBeforeNext(true);
         blankTimerRef.current = setTimeout(() => {
           blankTimerRef.current = null;
@@ -87,11 +89,17 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
           }
         }, BLANK_BEFORE_NEXT_MS);
       }, FEEDBACK_MS);
-    }, CUE_DURATION_MS);
+    }, NO_SHARK_TIMEOUT_MS);
 
     return () => {
-      clearTimeout(timeout);
-      if (blankTimerRef.current) clearTimeout(blankTimerRef.current);
+      if (noSharkTimeoutRef.current) {
+        clearTimeout(noSharkTimeoutRef.current);
+        noSharkTimeoutRef.current = null;
+      }
+      if (blankTimerRef.current) {
+        clearTimeout(blankTimerRef.current);
+        blankTimerRef.current = null;
+      }
     };
   }, [cueIndex, isGo, addScore, nextTurn, onComplete, onTutorialComplete]);
 
@@ -105,24 +113,47 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
       const elapsedSec = (performance.now() - cueStartRef.current) / 1000;
 
       if (isGo) {
+        // SHARK: press = correct
         totalSecondsRef.current += elapsedSec;
         setFeedbackFlash("green");
+        onFeedbackChange?.("correct");
         advanceToNextCue();
       } else {
+        // NO SHARK: press = wrong — cancel the 3s timeout; show wrong feedback then advance (no blank phase to avoid stuck screen)
+        if (noSharkTimeoutRef.current) {
+          clearTimeout(noSharkTimeoutRef.current);
+          noSharkTimeoutRef.current = null;
+        }
+        if (wrongPressTimeoutRef.current) {
+          clearTimeout(wrongPressTimeoutRef.current);
+          wrongPressTimeoutRef.current = null;
+        }
         totalSecondsRef.current += 2.5;
         setShowWrongPopup(true);
         setFeedbackFlash("red");
-        // Wrong on SHARK: don't advance — after feedback, show same SHARK again
-        setTimeout(() => {
+        onFeedbackChange?.("incorrect");
+        wrongPressTimeoutRef.current = setTimeout(() => {
+          wrongPressTimeoutRef.current = null;
           setFeedbackFlash(null);
-          setMessage(null);
           setShowWrongPopup(false);
-          setBlankBeforeNext(true);
-          blankTimerRef.current = setTimeout(() => {
-            blankTimerRef.current = null;
-            setBlankBeforeNext(false);
-            handledRef.current = false;
-          }, BLANK_BEFORE_NEXT_MS);
+          onFeedbackChange?.(null);
+          setBlankBeforeNext(false);
+          if (cueIndex + 1 >= CUE_COUNT) {
+            if (onTutorialComplete) {
+              setTimeout(() => {
+                onTutorialComplete();
+                onComplete?.(performance.now() - roundStartRef.current);
+              }, 200);
+            } else {
+              addScore(totalSecondsRef.current, 0);
+              setTimeout(() => {
+                nextTurn();
+                onComplete?.(performance.now() - roundStartRef.current);
+              }, 200);
+            }
+          } else {
+            setCueIndex((i) => i + 1);
+          }
         }, FEEDBACK_MS);
       }
     };
@@ -130,8 +161,8 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
     function advanceToNextCue() {
       setTimeout(() => {
         setFeedbackFlash(null);
-        setMessage(null);
         setShowWrongPopup(false);
+        onFeedbackChange?.(null);
         setBlankBeforeNext(true);
         blankTimerRef.current = setTimeout(() => {
           blankTimerRef.current = null;
@@ -158,42 +189,36 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [cueIndex, isGo, addScore, nextTurn, onComplete, onTutorialComplete]);
-
-  const ringClass =
-    feedbackFlash === "green"
-      ? "ring-4 ring-cyan-500"
-      : feedbackFlash === "red"
-        ? "ring-4 ring-red-500 shadow-[0_0_24px_rgba(239,68,68,0.5)]"
-        : "ring-2 ring-cyan-500/30";
+  }, [cueIndex, isGo, addScore, nextTurn, onComplete, onTutorialComplete, onFeedbackChange]);
 
   const circleBg = "bg-cyan-500";
-  const label = isGo ? "SHARK" : "NO SHARK";
 
   return (
-    <div
-      className={`relative flex flex-col items-center justify-center gap-6 rounded-2xl border border-cyan-500/30 bg-cyan-950/40 px-8 py-10 backdrop-blur-sm transition-all duration-200 ${blankBeforeNext ? "ring-2 ring-cyan-500/20" : ringClass}`}
-    >
-      {showWrongPopup && (
-        <div className="absolute inset-0 z-10 rounded-2xl bg-red-500/30" aria-hidden />
-      )}
-      <div className="flex min-h-[9rem] min-w-[9rem] items-center justify-center">
+    <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 rounded-2xl px-6 py-8 transition-all duration-200">
+      <div className="flex min-h-[16rem] min-w-[16rem] items-center justify-center md:min-h-[18rem] md:min-w-[18rem]">
         {!blankBeforeNext && (
           <div
-            className={`flex h-36 w-36 items-center justify-center rounded-full ${circleBg} text-xl font-bold tracking-wide text-white shadow-lg`}
+            className={`flex h-44 w-44 items-center justify-center rounded-full ${circleBg} drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] [filter:drop-shadow(0_0_8px_rgba(34,211,238,0.25))] md:h-52 md:w-52 lg:h-56 lg:w-56`}
           >
-            {label}
+            {isGo ? (
+              <img
+                src="/shark.svg"
+                alt="Shark"
+                className="h-3/4 w-3/4 object-contain"
+              />
+            ) : (
+              <img
+                src="/seaweed.svg"
+                alt="No shark"
+                className="h-3/4 w-3/4 object-contain"
+              />
+            )}
           </div>
         )}
       </div>
-      {!blankBeforeNext && message && (
-        <p className="text-sm font-semibold text-cyan-200">
-          {message}
-        </p>
-      )}
       {!blankBeforeNext && isTutorial && (
-        <p className="mt-2 text-center text-sm font-bold tracking-wide text-cyan-200">
-          Press <KeyCap>Space</KeyCap> if SHARK present!
+        <p className="mt-2 text-center text-base font-bold tracking-wide text-cyan-100 md:text-lg">
+          Press <KeyCap>Space</KeyCap> if a shark is present!
         </p>
       )}
     </div>

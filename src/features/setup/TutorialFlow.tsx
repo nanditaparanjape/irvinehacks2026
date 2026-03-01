@@ -18,6 +18,7 @@ const TEST_COMPONENTS: Record<
   React.ComponentType<{
     onComplete?: (elapsedMs: number) => void;
     onTutorialComplete?: () => void;
+    onFeedbackChange?: (feedback: "correct" | "incorrect" | null) => void;
   }>
 > = {
   stroop: StroopTest,
@@ -56,6 +57,7 @@ export function TutorialFlow() {
       : (player2Name || "Player 2");
 
   const [sandboxFlashVisible, setSandboxFlashVisible] = useState(false);
+  const [tutorialTestFeedback, setTutorialTestFeedback] = useState<"correct" | "incorrect" | null>(null);
 
   useEffect(() => {
     if (tutorialStep !== "sandbox" || !isTrying) return;
@@ -68,43 +70,40 @@ export function TutorialFlow() {
     setTutorialSandboxPhase("COMPLETE");
   }, [setTutorialSandboxPhase]);
 
-  const skipButton = (
-    <button
-      type="button"
-      onClick={skipToTutorialComplete}
-      className="rounded-lg border border-cyan-500/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-medium text-cyan-200 transition hover:bg-cyan-500/30"
-    >
-      Skip Tutorial
-    </button>
-  );
+  useEffect(() => {
+    if (tutorialStep !== "sandbox" || !isTrying) setTutorialTestFeedback(null);
+  }, [tutorialStep, isTrying, tutorialMission, tutorialSandboxRetryCount]);
 
   const modalContent = (
     <>
-      <div className="absolute left-4 top-4 text-sm font-semibold text-cyan-300/90">
-        {tutorialMission}/4
-      </div>
-      <div className="absolute bottom-4 right-4">{skipButton}</div>
-
       {tutorialStep === "preview" && (
-        <div className="flex w-full flex-1 flex-col items-center justify-center gap-6 overflow-y-auto pt-10">
-          <TutorialPreview mission={tutorialMission} onTryIt={setTutorialTryIt} />
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+          <div className="game-modal flex w-full max-w-xl flex-col items-center justify-center gap-6 p-8">
+            <TutorialPreview mission={tutorialMission} onTryIt={setTutorialTryIt} />
+          </div>
         </div>
       )}
 
       {tutorialStep === "sandbox" && isTrying && (
-        <div className="flex w-full flex-1 flex-col items-center justify-center overflow-y-auto pt-10">
-          <div className="flex w-full flex-1 flex-col items-center justify-center rounded-2xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)]/80 px-4 py-6 md:px-6">
-            {sandboxFlashVisible ? (
-              <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-[var(--modal-bg)] p-6">
-                <span className="font-bubbly text-center text-3xl font-semibold uppercase tracking-widest text-cyan-300 md:text-5xl">
-                  {activeTutorialPlayerName}, your turn!
-                </span>
+        <div className="flex w-full flex-1 flex-col items-center justify-center p-8">
+          <div
+            className={`game-modal relative flex w-full flex-col items-center justify-center rounded-3xl border-2 bg-[var(--modal-bg)] p-8 shadow-2xl transition-all duration-200 ${tutorialTestFeedback === "correct" ? "ring-4 ring-cyan-500 border-cyan-500/50" : tutorialTestFeedback === "incorrect" ? "ring-4 ring-red-500 border-red-500/50 shadow-[0_0_24px_rgba(239,68,68,0.4)]" : "border-[var(--modal-border)]"}`}
+          >
+            {tutorialTestFeedback === "incorrect" && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-red-500/30 pointer-events-none" aria-hidden>
+                <span className="font-bubbly text-3xl font-black uppercase text-white drop-shadow-lg">Wrong!</span>
               </div>
+            )}
+            {sandboxFlashVisible ? (
+              <span className="font-bubbly text-center text-4xl font-black uppercase tracking-widest text-cyan-100 md:text-5xl">
+                {activeTutorialPlayerName}, your turn!
+              </span>
             ) : (
-              <div className="flex w-full flex-1 flex-col items-center justify-center">
+              <div className="flex h-full w-full flex-col items-center justify-center">
                 <TestComponent
                   key={`tutorial-${tutorialMission}-${tutorialSandboxRetryCount}`}
                   onTutorialComplete={handleSandboxComplete}
+                  onFeedbackChange={setTutorialTestFeedback}
                 />
               </div>
             )}
@@ -113,20 +112,20 @@ export function TutorialFlow() {
       )}
 
       {tutorialStep === "sandbox" && isComplete && (
-        <div className="flex w-full flex-1 flex-col items-end justify-end gap-4 overflow-y-auto pt-10 pb-2">
+        <div className="flex w-full flex-1 flex-col items-center justify-end gap-4 p-8">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="w-full flex flex-col items-center gap-4 rounded-2xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)]/90 p-6"
+            className="game-modal flex w-full flex-col items-center justify-center gap-6 rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-8 shadow-2xl"
           >
-            <p className="mx-auto max-w-prose text-center text-lg font-medium text-cyan-200 md:text-xl">
-              Tutorial {tutorialMission} complete
+            <p className="mx-auto max-w-prose text-center text-xl font-medium text-cyan-100 md:text-2xl">
+              Tutorial {tutorialMission} complete!
             </p>
-            <div className="flex flex-row items-center justify-center gap-3">
+            <div className="flex flex-row flex-wrap items-center justify-center gap-4">
               <button
                 type="button"
                 onClick={setTutorialSandboxTryAgain}
-                className="rounded-xl border border-cyan-500/50 bg-cyan-500/20 px-6 py-3 font-bold text-cyan-200 transition hover:bg-cyan-500/40"
+                className="rounded-xl border-2 border-cyan-400/60 bg-[var(--modal-bg)] px-6 py-3.5 font-bold text-cyan-100 transition hover:bg-cyan-500/30"
               >
                 Try again
               </button>
@@ -134,7 +133,7 @@ export function TutorialFlow() {
                 <button
                   type="button"
                   onClick={setTutorialCompleteFromSandbox}
-                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500 px-6 py-3 font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
+                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500 px-6 py-3.5 text-lg font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
                 >
                   Complete tutorial
                 </button>
@@ -142,7 +141,7 @@ export function TutorialFlow() {
                 <button
                   type="button"
                   onClick={setTutorialNextMission}
-                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500/50 px-6 py-3 font-bold text-cyan-100 transition hover:bg-cyan-400/60"
+                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500/90 px-6 py-3.5 text-lg font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
                 >
                   Next tutorial
                 </button>
@@ -155,10 +154,22 @@ export function TutorialFlow() {
   );
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-6">
-      <div className="onboarding-modal relative flex w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-2xl">
-        {modalContent}
+    <div className="relative flex min-h-[70vh] flex-col items-center justify-center px-4 py-6">
+      <div className="relative w-full max-w-2xl">
+        <div className="absolute left-0 top-0 z-10 -translate-y-full pb-2 text-base font-semibold text-cyan-100 md:text-lg">
+          {tutorialMission}/4
+        </div>
+        <div className="onboarding-modal flex w-full flex-col rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-8 shadow-2xl">
+          {modalContent}
+        </div>
       </div>
+      <button
+        type="button"
+        onClick={skipToTutorialComplete}
+        className="fixed bottom-8 right-8 z-[60] rounded-xl border-2 border-cyan-500/60 bg-[var(--modal-bg)]/90 px-5 py-2.5 text-base font-bold text-cyan-100 backdrop-blur-sm transition hover:bg-cyan-500/20 hover:text-cyan-50"
+      >
+        Skip Tutorial
+      </button>
     </div>
   );
 }

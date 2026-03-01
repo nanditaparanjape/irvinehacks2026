@@ -123,7 +123,7 @@ export const SpeedGridTest = ({ onComplete, onTutorialComplete }: SpeedGridTestP
   };
 
   return (
-    <div className="flex w-full flex-1 flex-col items-center justify-center gap-6">
+    <div className="flex min-h-full w-full flex-1 flex-col items-center justify-center gap-6">
       {/* Grid centered in the middle — no overlap with header above or instruction below */}
       <div
         className="grid shrink-0 gap-3 sm:gap-4"

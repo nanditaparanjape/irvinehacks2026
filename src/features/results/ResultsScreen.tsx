@@ -2,8 +2,9 @@
 
 import { useMemo, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
-import { useGameStore, MAX_ROUNDS } from "@/store/useGameStore";
+import { useGameStore } from "@/store/useGameStore";
 import type { RoundTestType } from "@/store/useGameStore";
+import { CharacterImg } from "@/components/CharacterImg";
 
 const BUBBLE_COUNT = 42;
 
@@ -166,7 +167,7 @@ export function ResultsScreen() {
     <div ref={containerRef} className="relative min-h-[200vh]">
       {/* Ocean canvas: gradient + bubbles (mimic first page) */}
       <motion.div
-        className="fixed inset-0 z-[-50]"
+        className="pointer-events-none fixed inset-0 z-[-50]"
         style={{ backgroundColor }}
         aria-hidden
       >
@@ -175,7 +176,7 @@ export function ResultsScreen() {
 
       {/* Section 1: Results + scroll CTA — crew-names style */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-between px-4 py-16">
-        <div className="flex w-full max-w-lg flex-1 flex-col justify-center gap-8 rounded-3xl border-2 border-cyan-500/40 bg-white/15 p-6 shadow-2xl backdrop-blur-md">
+        <div className="flex w-full max-w-lg flex-1 flex-col justify-center gap-8 rounded-3xl border-2 border-cyan-400/60 bg-[var(--modal-bg)]/95 p-8 shadow-2xl backdrop-blur-md">
           {/* Winner / Tie headline */}
           <div className="text-center">
             {isTie ? (
@@ -183,7 +184,7 @@ export function ResultsScreen() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="font-bubbly text-4xl font-black tracking-tight text-cyan-300 md:text-5xl"
+                className="font-bubbly text-4xl font-black tracking-tight text-cyan-100 md:text-5xl"
               >
                 It&apos;s a Tie!
               </motion.h1>
@@ -192,25 +193,30 @@ export function ResultsScreen() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="font-bubbly text-4xl font-black tracking-tight text-cyan-300 md:text-5xl"
+                className="font-bubbly text-4xl font-black tracking-tight text-cyan-100 md:text-5xl"
               >
                 {winner === 1 ? p1Name : p2Name} Wins!
               </motion.h1>
             )}
           </div>
 
-          {/* Mascots */}
-          <div className="flex justify-center gap-8">
+          {/* Character avatars with scores above: tie = same size; winner larger, loser smaller */}
+          <div className="flex flex-wrap items-end justify-center gap-6">
             {isTie ? (
               <>
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 backdrop-blur-md"
+                  className="flex flex-col items-center gap-1"
                 >
-                  <span className="text-xs font-semibold uppercase">Mascot</span>
-                  <span className="text-sm font-bold">{p1Name}</span>
+                  <p className="text-center text-xl font-bold text-cyan-100 md:text-2xl">
+                    {player1TotalTime.toFixed(1)}s
+                  </p>
+                  <div className="h-28 w-28 md:h-32 md:w-32">
+                    <CharacterImg player={1} className="h-full w-full" alt={p1Name} />
+                  </div>
+                  <span className="text-base font-bold text-cyan-100">{p1Name}</span>
                 </motion.div>
                 <motion.div
                   initial={{ scale: 0 }}
@@ -221,75 +227,105 @@ export function ResultsScreen() {
                     damping: 15,
                     delay: 0.1,
                   }}
-                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 backdrop-blur-md"
+                  className="flex flex-col items-center gap-1"
                 >
-                  <span className="text-xs font-semibold uppercase">Mascot</span>
-                  <span className="text-sm font-bold">{p2Name}</span>
+                  <p className="text-center text-xl font-bold text-cyan-100 md:text-2xl">
+                    {player2TotalTime.toFixed(1)}s
+                  </p>
+                  <div className="h-28 w-28 md:h-32 md:w-32">
+                    <CharacterImg player={2} className="h-full w-full" alt={p2Name} />
+                  </div>
+                  <span className="text-base font-bold text-cyan-100">{p2Name}</span>
                 </motion.div>
               </>
             ) : (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{
-                  scale: [0, 1.15, 1],
-                  opacity: 1,
-                  transition: {
-                    scale: { times: [0, 0.7, 1], duration: 0.5 },
-                  },
-                }}
-                className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 shadow-lg shadow-cyan-500/30 backdrop-blur-md"
-              >
-                <motion.span
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 1.8,
-                    ease: "easeInOut",
+              <>
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{
+                    scale: winner === 1 ? [0, 1.15, 1] : [0, 1],
+                    opacity: 1,
+                    transition: {
+                      scale: { times: winner === 1 ? [0, 0.7, 1] : [0, 1], duration: 0.5 },
+                    },
                   }}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center gap-1"
                 >
-                  <span className="text-xs font-semibold uppercase">Winner</span>
-                  <span className="mt-1 text-lg font-bold">
-                    {winner === 1 ? p1Name : p2Name}
+                  <p
+                    className={
+                      winner === 1
+                        ? "text-center text-xl font-bold text-cyan-300 md:text-2xl"
+                        : "text-center text-lg font-semibold text-cyan-100/85 md:text-xl"
+                    }
+                  >
+                    {player1TotalTime.toFixed(1)}s
+                  </p>
+                  <div
+                    className={
+                      winner === 1
+                        ? "h-36 w-36 md:h-40 md:w-40"
+                        : "h-20 w-20 md:h-24 md:w-24 opacity-90"
+                    }
+                  >
+                    <CharacterImg player={1} className="h-full w-full" alt={p1Name} />
+                  </div>
+                  <span
+                    className={
+                      winner === 1
+                        ? "text-base font-bold text-cyan-300"
+                        : "text-base font-semibold text-cyan-100/85"
+                    }
+                  >
+                    {p1Name}
                   </span>
-                </motion.span>
-              </motion.div>
+                </motion.div>
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{
+                    scale: winner === 2 ? [0, 1.15, 1] : [0, 1],
+                    opacity: 1,
+                    transition: {
+                      scale: { times: winner === 2 ? [0, 0.7, 1] : [0, 1], duration: 0.5 },
+                      delay: 0.1,
+                    },
+                  }}
+                  className="flex flex-col items-center gap-1"
+                >
+                  <p
+                    className={
+                      winner === 2
+                        ? "text-center text-xl font-bold text-cyan-300 md:text-2xl"
+                        : "text-center text-lg font-semibold text-cyan-100/85 md:text-xl"
+                    }
+                  >
+                    {player2TotalTime.toFixed(1)}s
+                  </p>
+                  <div
+                    className={
+                      winner === 2
+                        ? "h-36 w-36 md:h-40 md:w-40"
+                        : "h-20 w-20 md:h-24 md:w-24 opacity-90"
+                    }
+                  >
+                    <CharacterImg player={2} className="h-full w-full" alt={p2Name} />
+                  </div>
+                  <span
+                    className={
+                      winner === 2
+                        ? "text-base font-bold text-cyan-300"
+                        : "text-base font-semibold text-cyan-100/85"
+                    }
+                  >
+                    {p2Name}
+                  </span>
+                </motion.div>
+              </>
             )}
           </div>
 
-          {/* Stats comparison */}
-          <p className="text-center text-xs text-cyan-200/90">
-            Collective Action Time over {MAX_ROUNDS} rounds
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-lg">
-            <span
-              className={
-                !isTie && winner === 1
-                  ? "font-bold text-cyan-300"
-                  : !isTie && winner === 2
-                    ? "text-cyan-200/80"
-                    : "text-cyan-200/90"
-              }
-            >
-              {p1Name}: {player1TotalTime.toFixed(1)}s
-            </span>
-            <span className="text-cyan-300/70">vs</span>
-            <span
-              className={
-                !isTie && winner === 2
-                  ? "font-bold text-cyan-300"
-                  : !isTie && winner === 1
-                    ? "text-cyan-200/80"
-                    : "text-cyan-200/90"
-              }
-            >
-              {p2Name}: {player2TotalTime.toFixed(1)}s
-            </span>
-          </div>
-
           {/* Run breakdown */}
-          <div className="border-t border-cyan-500/30 pt-6">
-            <ul className="space-y-2 text-sm text-cyan-200/90">
+          <div className="border-t-2 border-cyan-400/40 pt-6">
+            <ul className="space-y-2.5 text-base text-cyan-100">
               {breakdownLines.map(({ text }, i) => (
                 <li key={`breakdown-${i}`}>{text}</li>
               ))}
@@ -305,7 +341,7 @@ export function ResultsScreen() {
           <p className="font-bubbly text-center text-xl font-bold text-white md:text-2xl">
             Scroll down to learn the science
           </p>
-          <p className="mt-2 text-center text-2xl text-cyan-300" aria-hidden>
+          <p className="mt-2 text-center text-4xl font-black text-cyan-300 md:text-5xl" aria-hidden>
             ↓
           </p>
         </motion.div>
@@ -313,14 +349,14 @@ export function ResultsScreen() {
 
       {/* Section 2: Learn the Science — crew style + flip cards */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-32 pt-24">
-        <div className="w-full max-w-lg rounded-3xl border-2 border-cyan-500/40 bg-white/15 p-6 shadow-2xl backdrop-blur-md">
-          <h2 className="font-bubbly text-center text-2xl font-bold text-cyan-300 md:text-3xl">
+        <div className="w-full max-w-3xl rounded-3xl border-2 border-cyan-400/60 bg-[var(--modal-bg)]/95 p-8 shadow-2xl backdrop-blur-md md:p-10">
+          <h2 className="font-bubbly text-center text-3xl font-bold text-cyan-100 md:text-4xl">
             Learn the Science
           </h2>
-          <p className="mt-1 text-center text-sm text-white/90">
-            Hover over a card to read the science
+          <p className="mt-2 text-center text-base text-cyan-100/95">
+            Hover over a card to read the science behind the challenges.
           </p>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2">
             {[
               { name: "Color Coral", science: "The Stroop effect measures selective attention and cognitive control. When word meaning and ink color conflict, your brain must inhibit automatic reading; faster, accurate responses reflect stronger executive control." },
               { name: "Bubble Burst", science: "Inspired by the Corsi block test: you react to each letter as it appears. This taps processing speed and visuospatial attention; your reaction time reflects how quickly you can locate a target and execute a response." },
@@ -328,24 +364,26 @@ export function ResultsScreen() {
               { name: "Shark Attack", science: "Response inhibition. Press when you see the shark; do nothing when it's clear. This tests reaction time to a target and the ability to withhold when there's no shark—key parts of executive function." },
             ].map(({ name, science }) => (
               <li key={name} className="group [perspective:600px]">
-                <div className="relative h-32 transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] sm:h-36">
-                  <div className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-cyan-500/40 bg-white/20 p-4 [backface-visibility:hidden]">
-                    <strong className="font-bubbly text-center font-semibold text-cyan-300">{name}</strong>
+                <div className="relative min-h-[11rem] transition-transform duration-[800ms] ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] sm:min-h-[13rem]">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-cyan-400/50 bg-white/25 p-4 [backface-visibility:hidden]">
+                    <strong className="font-bubbly line-clamp-2 text-center text-lg font-semibold text-cyan-100 sm:text-xl">{name}</strong>
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-cyan-500/40 bg-cyan-400/20 p-3 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                    <p className="text-center text-xs leading-snug text-white/95">{science}</p>
+                  <div className="absolute inset-0 flex flex-col overflow-hidden rounded-xl border-2 border-cyan-400/50 bg-cyan-500/30 p-4 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto">
+                      <p className="text-center text-xs leading-snug text-cyan-50 sm:text-sm">{science}</p>
+                    </div>
                   </div>
                 </div>
               </li>
             ))}
           </ul>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-10 flex justify-center">
             <motion.button
               type="button"
               onClick={handleNewGame}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="rounded-xl border-2 border-cyan-500/50 bg-cyan-500/90 px-8 py-3 text-lg font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
+              className="rounded-xl border-2 border-cyan-400 bg-cyan-500 px-8 py-4 text-xl font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
             >
               New Game
             </motion.button>

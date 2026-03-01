@@ -6,7 +6,7 @@
   /* Opaque modal overlay and background so content behind is not visible */
   --modal-overlay: rgba(0, 20, 40, 0.95);
   --modal-bg: #0d4a6e;
-  --modal-border: rgba(34, 211, 238, 0.4);
+  --modal-border: rgba(103, 232, 249, 0.55);
 }
 
 @theme inline {
@@ -30,14 +30,15 @@ body {
 .onboarding-modal {
   min-height: 70vh;
   height: 70vh;
-  max-width: 32rem; /* max-w-lg */
+  max-width: 40rem; /* wider for laptop */
   width: 100%;
 }
 
-/* Gameplay challenge modal — fixed size, doesn't hug content */
+/* Gameplay challenge modal — fixed size; same as player-turn flash for consistency */
 .game-modal {
-  min-height: 420px;
-  height: 420px;
+  min-height: 480px;
+  height: 480px;
   width: 100%;
-  max-width: 32rem;
+  min-width: 32rem;
+  max-width: 40rem;
 }

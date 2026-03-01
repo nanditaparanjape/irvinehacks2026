@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { type MotionValue, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { useGameStore } from "@/store/useGameStore";
 import { KeyCap } from "@/components/KeyCap";
+import { CharacterImg } from "@/components/CharacterImg";
 
 const BUBBLE_COUNT = 42;
 
@@ -110,7 +111,7 @@ export function DiveInPage() {
     <div ref={containerRef} className="relative min-h-[200vh]">
       {/* Ocean Canvas: absolute bottom layer; no overflow/background on parent */}
       <motion.div
-        className="fixed inset-0 z-[-50]"
+        className="pointer-events-none fixed inset-0 z-[-50]"
         style={{ backgroundColor }}
         aria-hidden
       >
@@ -145,14 +146,13 @@ export function DiveInPage() {
               </motion.span>
             ))}
           </motion.h1>
-          <div className="mt-12 flex gap-16">
+          <div className="mt-12 flex gap-20">
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-              className="flex h-24 w-24 flex-col items-center justify-center rounded-full border-2 border-white/40 bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.3)] backdrop-blur-sm"
+              className="flex h-40 w-40 items-center justify-center drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.25))] md:h-48 md:w-48"
             >
-              <span className="font-bubbly text-xs font-bold text-white">Voyager</span>
-              <span className="font-bubbly mt-0.5 text-2xl font-bold text-white/95">1</span>
+              <CharacterImg player={1} className="h-full w-full" alt="Player 1" />
             </motion.div>
             <motion.div
               animate={{ y: [0, 8, 0] }}
@@ -162,10 +162,9 @@ export function DiveInPage() {
                 ease: "easeInOut",
                 delay: 0.5,
               }}
-              className="flex h-24 w-24 flex-col items-center justify-center rounded-full border-2 border-white/40 bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.3)] backdrop-blur-sm"
+              className="flex h-40 w-40 items-center justify-center drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.25))] md:h-48 md:w-48"
             >
-              <span className="font-bubbly text-xs font-bold text-white">Voyager</span>
-              <span className="font-bubbly mt-0.5 text-2xl font-bold text-white/95">2</span>
+              <CharacterImg player={2} className="h-full w-full" alt="Player 2" />
             </motion.div>
           </div>
           <motion.div
@@ -173,7 +172,7 @@ export function DiveInPage() {
             style={{ opacity: divePromptOpacity }}
           >
             <p className="font-bubbly text-center text-xl font-bold text-white md:text-2xl">
-              Scroll to dive
+              scroll to dive!
             </p>
             <p className="mt-2 text-center text-2xl text-cyan-300" aria-hidden>
               ↓
@@ -182,23 +181,23 @@ export function DiveInPage() {
         </div>
       </section>
 
-      {/* Underwater — Crew names + mascots; hidden when briefing open */}
+      {/* Underwater — Crew Names + mascots; hidden when briefing open */}
       <section
         className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-32 pt-24"
         aria-hidden={showBriefing}
         style={{ visibility: showBriefing ? "hidden" : "visible" }}
       >
-        <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-8">
-          <div className="w-full rounded-3xl border-2 border-cyan-500/40 bg-white/15 p-6 backdrop-blur-md">
-            <h2 className="font-bubbly text-center text-2xl font-bold text-cyan-300 md:text-3xl">
-              Crew names
+        <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-10">
+          <div className="w-full rounded-3xl border-2 border-cyan-400/60 bg-[var(--modal-bg)]/95 p-8 shadow-2xl backdrop-blur-md">
+            <h2 className="font-bubbly text-center text-3xl font-bold text-cyan-100 md:text-4xl">
+              Crew Names
             </h2>
-            <p className="mt-1 text-center text-sm text-white/95">
+            <p className="mt-2 text-center text-base text-cyan-100/95">
               Enter names then continue for mission briefing
             </p>
-            <div className="mt-6 space-y-4">
+            <div className="mt-8 space-y-5">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-white/95">
+                <label className="text-sm font-semibold uppercase tracking-wide text-cyan-100">
                   Player 1
                 </label>
                 <input
@@ -212,11 +211,11 @@ export function DiveInPage() {
                     }
                   }}
                   placeholder="Voyager name"
-                  className="mt-1 w-full rounded-xl border-2 border-cyan-500/40 bg-white/25 px-4 py-3 text-white placeholder:text-white/55 backdrop-blur-sm focus:border-cyan-400 focus:outline-none"
+                  className="mt-2 w-full rounded-xl border-2 border-cyan-400/50 bg-white/20 px-5 py-4 text-lg text-white placeholder:text-white/60 backdrop-blur-sm focus:border-cyan-300 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-white/95">
+                <label className="text-sm font-semibold uppercase tracking-wide text-cyan-100">
                   Player 2
                 </label>
                 <input
@@ -231,7 +230,7 @@ export function DiveInPage() {
                     }
                   }}
                   placeholder="Voyager name"
-                  className="mt-1 w-full rounded-xl border-2 border-cyan-500/40 bg-white/25 px-4 py-3 text-white placeholder:text-white/55 backdrop-blur-sm focus:border-cyan-400 focus:outline-none"
+                  className="mt-2 w-full rounded-xl border-2 border-cyan-400/50 bg-white/20 px-5 py-4 text-lg text-white placeholder:text-white/60 backdrop-blur-sm focus:border-cyan-300 focus:outline-none"
                 />
               </div>
             </div>
@@ -239,18 +238,18 @@ export function DiveInPage() {
               type="button"
               onClick={handleContinue}
               disabled={!canStart}
-              className="mt-6 w-full rounded-xl bg-cyan-500/90 py-3 font-bold text-white transition hover:bg-cyan-400 disabled:opacity-50"
+              className="mt-8 w-full rounded-xl bg-cyan-400 py-4 text-lg font-bold text-[#0d4a6e] transition hover:bg-cyan-300 disabled:opacity-50"
             >
               Dive in
             </button>
           </div>
-          <div className="flex gap-12">
+          <div className="flex gap-16">
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-md"
+              className="flex h-32 w-32 items-center justify-center drop-shadow-[0_6px_20px_rgba(0,0,0,0.3)] [filter:drop-shadow(0_0_10px_rgba(255,255,255,0.2))] md:h-36 md:w-36"
             >
-              <span className="font-bubbly text-2xl font-bold text-white">1</span>
+              <CharacterImg player={1} className="h-full w-full" alt="Player 1" />
             </motion.div>
             <motion.div
               animate={{ y: [0, 6, 0] }}
@@ -260,9 +259,9 @@ export function DiveInPage() {
                 delay: 0.3,
                 ease: "easeInOut",
               }}
-              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-md"
+              className="flex h-32 w-32 items-center justify-center drop-shadow-[0_6px_20px_rgba(0,0,0,0.3)] [filter:drop-shadow(0_0_10px_rgba(255,255,255,0.2))] md:h-36 md:w-36"
             >
-              <span className="font-bubbly text-2xl font-bold text-white">2</span>
+              <CharacterImg player={2} className="h-full w-full" alt="Player 2" />
             </motion.div>
           </div>
         </div>
@@ -283,43 +282,43 @@ export function DiveInPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="onboarding-modal flex min-h-[70vh] max-h-[90vh] w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-2xl"
+            className="onboarding-modal flex min-h-[70vh] max-h-[90vh] w-full max-w-2xl flex-col overflow-y-auto rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-8 shadow-2xl"
           >
-            <h2 id="mission-briefing-title" className="font-bubbly text-center text-3xl font-bold text-cyan-300 md:text-4xl">
+            <h2 id="mission-briefing-title" className="font-bubbly text-center text-3xl font-bold text-cyan-100 md:text-4xl">
               Mission Briefing
             </h2>
-            <p className="mt-2 text-center text-base text-white/95">
+            <p className="mt-3 text-center text-lg text-cyan-100/95">
               Four challenges. Speed wins.
             </p>
-            <ul className="mt-6 space-y-4 text-base text-white/95">
-              <li className="rounded-xl border border-cyan-500/30 bg-white/10 p-3">
-                <strong className="font-bubbly font-semibold text-cyan-300">Color Coral</strong> — The reef is changing colors! Click <KeyCap>Y</KeyCap> if the color of the text matches the word, or <KeyCap>N</KeyCap> if not.
+            <ul className="mt-8 space-y-5 text-lg text-cyan-100/95">
+              <li className="rounded-xl border border-cyan-400/40 bg-white/15 p-4">
+                <strong className="font-bubbly font-semibold text-cyan-100">Color Coral</strong> — The reef is changing colors! Click <KeyCap>Y</KeyCap> if the color of the text matches the word, or <KeyCap>N</KeyCap> if not.
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-white/10 p-3">
-                <strong className="font-bubbly font-semibold text-cyan-300">Bubble Burst</strong> — A letter flashes inside a bubble on the grid. Pop it by typing the letter as fast as you can!
+              <li className="rounded-xl border border-cyan-400/40 bg-white/15 p-4">
+                <strong className="font-bubbly font-semibold text-cyan-100">Bubble Burst</strong> — A letter flashes inside a bubble on the grid. Pop it by typing the letter as fast as you can!
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-white/10 p-3">
-                <strong className="font-bubbly font-semibold text-cyan-300">Deep Dive</strong> — Check the math to keep your air! Type <KeyCap>Y</KeyCap> if the sum is right or <KeyCap>N</KeyCap> if it&apos;s wrong.
+              <li className="rounded-xl border border-cyan-400/40 bg-white/15 p-4">
+                <strong className="font-bubbly font-semibold text-cyan-100">Deep Dive</strong> — Check the math to keep your air! Type <KeyCap>Y</KeyCap> if the sum is right or <KeyCap>N</KeyCap> if it&apos;s wrong.
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-white/10 p-3">
-                <strong className="font-bubbly font-semibold text-cyan-300">Shark Attack</strong> — Press <KeyCap>Space</KeyCap> if SHARK present!
+              <li className="rounded-xl border border-cyan-400/40 bg-white/15 p-4">
+                <strong className="font-bubbly font-semibold text-cyan-100">Shark Attack</strong> — Press <KeyCap>Space</KeyCap> if a shark is present!
               </li>
             </ul>
             <button
               type="button"
               onClick={handleDiveNow}
-              className="mt-8 w-full rounded-xl bg-cyan-400 py-4 text-lg font-black uppercase tracking-wide text-[var(--modal-bg)] shadow-lg shadow-cyan-500/40 transition hover:bg-cyan-300"
+              className="mt-10 w-full rounded-xl bg-cyan-400 py-4 text-xl font-black uppercase tracking-wide text-[var(--modal-bg)] shadow-lg shadow-cyan-500/40 transition hover:bg-cyan-300"
             >
               Dive into TUTORIAL
             </button>
-            <button
-              type="button"
-              onClick={handleSkipTutorial}
-              className="mt-3 w-full rounded-xl border-2 border-cyan-500/50 bg-transparent py-3 text-base font-bold text-cyan-100 transition hover:bg-cyan-500/20"
-            >
-              Skip Tutorial
-            </button>
           </motion.div>
+          <button
+            type="button"
+            onClick={handleSkipTutorial}
+            className="fixed bottom-8 right-8 z-[60] rounded-xl border-2 border-cyan-500/60 bg-[var(--modal-bg)]/90 px-5 py-2.5 text-base font-bold text-cyan-100 backdrop-blur-sm transition hover:bg-cyan-500/20 hover:text-cyan-50"
+          >
+            Skip Tutorial
+          </button>
         </motion.div>
       )}
     </div>

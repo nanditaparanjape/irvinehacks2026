@@ -42,9 +42,10 @@ function generateEquation(): {
 export interface EquationTestProps {
   onComplete?: (elapsedMs: number) => void;
   onTutorialComplete?: () => void;
+  onFeedbackChange?: (feedback: "correct" | "incorrect" | null) => void;
 }
 
-export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestProps) => {
+export const EquationTest = ({ onComplete, onTutorialComplete, onFeedbackChange }: EquationTestProps) => {
   const addScore = useGameStore((state) => state.addScore);
   const nextTurn = useGameStore((state) => state.nextTurn);
   const isTutorial = useGameStore((state) => state.isTutorial);
@@ -78,7 +79,9 @@ export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestPro
       const elapsedMs = performance.now() - startTimeRef.current;
 
       if (onTutorialComplete) {
-        setFeedback(judgmentCorrect ? "correct" : "incorrect");
+        const fb = judgmentCorrect ? "correct" : "incorrect";
+        setFeedback(fb);
+        onFeedbackChange?.(fb);
         setTimeout(() => {
           onTutorialComplete();
           onComplete?.(elapsedMs);
@@ -89,7 +92,9 @@ export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestPro
       const elapsedSec = elapsedMs / 1000;
       const penalty = judgmentCorrect ? 0 : INCORRECT_PENALTY_SEC;
       addScore(elapsedSec, penalty);
-      setFeedback(judgmentCorrect ? "correct" : "incorrect");
+      const fb = judgmentCorrect ? "correct" : "incorrect";
+      setFeedback(fb);
+      onFeedbackChange?.(fb);
 
       setTimeout(() => {
         nextTurn();
@@ -99,23 +104,11 @@ export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestPro
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [addScore, nextTurn, onComplete, onTutorialComplete, equation.isCorrect]);
-
-  const ringClass =
-    feedback === "correct"
-      ? "ring-4 ring-cyan-500"
-      : feedback === "incorrect"
-        ? "ring-4 ring-red-500 shadow-[0_0_24px_rgba(239,68,68,0.5)]"
-        : "ring-1 ring-cyan-500/30";
+  }, [addScore, nextTurn, onComplete, onTutorialComplete, onFeedbackChange, equation.isCorrect]);
 
   return (
-    <div
-      className={`relative flex flex-col items-center justify-center gap-6 rounded-xl border border-cyan-500/30 bg-cyan-950/40 px-6 py-8 text-center backdrop-blur-sm transition-all duration-200 ${ringClass}`}
-    >
-      {feedback === "incorrect" && (
-        <div className="absolute inset-0 z-10 rounded-xl bg-red-500/30" aria-hidden />
-      )}
-      <p className="font-mono text-4xl font-bold tracking-tight text-cyan-50 md:text-5xl">
+    <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 px-6 py-8 text-center transition-all duration-200">
+      <p className="font-mono text-4xl font-bold tracking-tight text-cyan-100 md:text-5xl">
         {equation.display}
       </p>
     </div>
