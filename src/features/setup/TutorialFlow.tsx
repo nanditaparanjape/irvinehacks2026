@@ -72,8 +72,8 @@ export function TutorialFlow() {
     <div className="flex min-h-[70vh] flex-col items-center gap-8">
       <div className="flex shrink-0 justify-center pt-4 md:pt-6">
         <span
-          className="font-bubbly text-3xl font-black uppercase tracking-wide text-cyan-400 md:text-4xl"
-          style={{ textShadow: "0 0 20px rgba(34, 211, 238, 0.6)" }}
+          className="font-bubbly text-3xl font-semibold uppercase tracking-wide text-accent-muted md:text-4xl"
+          style={{ textShadow: "0 0 20px rgba(77, 184, 196, 0.4)" }}
         >
           Tutorial {tutorialMission}/4
         </span>
@@ -102,7 +102,7 @@ export function TutorialFlow() {
           <div className="flex w-full max-w-2xl flex-1 flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-black/20 px-4 py-6 backdrop-blur-sm md:px-6">
             {sandboxFlashVisible ? (
               <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-[#0c4a6e] p-6">
-                <span className="font-bubbly text-center text-3xl font-black uppercase tracking-widest text-cyan-300 md:text-5xl">
+                <span className="font-bubbly text-center text-3xl font-semibold uppercase tracking-widest text-accent-muted md:text-5xl">
                   {activeTutorialPlayerName}, your turn!
                 </span>
               </div>

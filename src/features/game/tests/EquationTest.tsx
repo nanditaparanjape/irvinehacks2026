@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
+import { KeyCap } from "@/components/KeyCap";
 
 const INCORRECT_PENALTY_SEC = 0.5;
 
@@ -128,9 +129,9 @@ export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestPro
         {equation.display}
       </p>
       {!isTutorial && (
-        <div className="flex gap-8 text-sm text-slate-500">
-          <span>[Y] Correct</span>
-          <span>[N] Incorrect</span>
+        <div className="flex items-center gap-8 text-sm text-slate-500">
+          <span><KeyCap>Y</KeyCap> Correct</span>
+          <span><KeyCap>N</KeyCap> Incorrect</span>
         </div>
       )}
     </div>

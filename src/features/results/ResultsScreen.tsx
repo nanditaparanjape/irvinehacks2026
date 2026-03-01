@@ -313,22 +313,22 @@ export function ResultsScreen() {
 
       {/* Section 2: Learn the Science card (same format as Mission Briefing) + New Game */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-32 pt-24">
-        <div className="w-full max-w-lg rounded-2xl border border-cyan-500/30 bg-black/40 p-6 shadow-2xl backdrop-blur-sm">
-          <h2 className="font-bubbly text-center text-2xl font-bold text-cyan-300 md:text-3xl">
+        <div className="w-full max-w-lg rounded-2xl border border-accent-muted/30 bg-black/40 p-6 shadow-2xl backdrop-blur-sm">
+          <h2 className="font-bubbly text-center text-2xl font-semibold text-accent-muted md:text-3xl">
             Learn the Science
           </h2>
-          <ul className="mt-6 space-y-4 text-sm text-white/90">
-            <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-              <strong className="text-cyan-300">Color Coral</strong> — The Stroop effect measures selective attention and cognitive control. When word meaning and ink color conflict, your brain must inhibit automatic reading; faster, accurate responses reflect stronger executive control.
+          <ul className="mt-6 space-y-4 text-base text-white/95">
+            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+              <strong className="font-bubbly font-semibold text-accent-muted">Color Coral</strong> — The Stroop effect measures selective attention and cognitive control. When word meaning and ink color conflict, your brain must inhibit automatic reading; faster, accurate responses reflect stronger executive control.
             </li>
-            <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-              <strong className="text-cyan-300">Bubble Burst</strong> — Inspired by the Corsi block test, but with a twist: instead of memorizing a sequence, you react to each letter as it appears. This taps processing speed and visuospatial attention; your reaction time reflects how quickly you can locate a target and execute a response.
+            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+              <strong className="font-bubbly font-semibold text-accent-muted">Bubble Burst</strong> — Inspired by the Corsi block test, but with a twist: instead of memorizing a sequence, you react to each letter as it appears. This taps processing speed and visuospatial attention; your reaction time reflects how quickly you can locate a target and execute a response.
             </li>
             <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
               <strong className="text-cyan-300">Deep Dive</strong> — Mental arithmetic and working memory. Verifying equations under time pressure measures calculation speed and sustained attention; both accuracy and speed reflect how well you manage cognitive load.
             </li>
-            <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-              <strong className="text-cyan-300">Shark Attack</strong> — Response inhibition. Press when you see the shark; do nothing when it’s clear. This tests reaction time to a target and the ability to withhold when there’s no shark—key parts of executive function.
+            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+              <strong className="font-bubbly font-semibold text-accent-muted">Shark Attack</strong> — Response inhibition. Press when you see the shark; do nothing when it’s clear. This tests reaction time to a target and the ability to withhold when there’s no shark—key parts of executive function.
             </li>
           </ul>
           <div className="mt-8 flex justify-center">

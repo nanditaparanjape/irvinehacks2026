@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { useGameStore } from "@/store/useGameStore";
+import { KeyCap } from "@/components/KeyCap";
 
 const BUBBLE_COUNT = 42;
 
@@ -180,16 +181,16 @@ export function DiveInPage() {
       {/* Underwater — Crew names + mascots; always visible, no fade */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-32 pt-24">
         <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-8">
-          <div className="w-full rounded-3xl border border-cyan-400/40 bg-white/10 p-6 backdrop-blur-md">
-            <h2 className="font-bubbly text-center text-xl font-bold text-cyan-300">
+          <div className="w-full rounded-3xl border border-accent-muted/50 bg-white/15 p-6 backdrop-blur-md">
+            <h2 className="font-bubbly text-center text-2xl font-bold text-accent-muted md:text-3xl">
               Crew names
             </h2>
-            <p className="mt-1 text-center text-sm text-white/90">
+            <p className="mt-1 text-center text-sm text-white/95">
               Enter names then continue for mission briefing
             </p>
             <div className="mt-6 space-y-4">
               <div>
-                <label className="text-xs font-medium text-cyan-200/90">
+                <label className="text-xs font-semibold uppercase tracking-wide text-white/95">
                   Player 1
                 </label>
                 <input
@@ -203,11 +204,11 @@ export function DiveInPage() {
                     }
                   }}
                   placeholder="Voyager name"
-                  className="mt-1 w-full rounded-xl border border-cyan-500/50 bg-white/10 px-4 py-3 text-white placeholder:text-white/40 backdrop-blur-sm focus:border-cyan-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-accent-muted/50 bg-white/25 px-4 py-3 text-white placeholder:text-white/55 backdrop-blur-sm focus:border-accent focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-cyan-200/90">
+                <label className="text-xs font-semibold uppercase tracking-wide text-white/95">
                   Player 2
                 </label>
                 <input
@@ -222,7 +223,7 @@ export function DiveInPage() {
                     }
                   }}
                   placeholder="Voyager name"
-                  className="mt-1 w-full rounded-xl border border-cyan-500/50 bg-white/10 px-4 py-3 text-white placeholder:text-white/40 backdrop-blur-sm focus:border-cyan-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-accent-muted/50 bg-white/25 px-4 py-3 text-white placeholder:text-white/55 backdrop-blur-sm focus:border-accent focus:outline-none"
                 />
               </div>
             </div>
@@ -230,7 +231,7 @@ export function DiveInPage() {
               type="button"
               onClick={handleContinue}
               disabled={!canStart}
-              className="mt-6 w-full rounded-xl bg-cyan-500/80 py-3 font-bold text-white transition hover:bg-cyan-400 disabled:opacity-50"
+              className="mt-6 w-full rounded-xl bg-accent/90 py-3 font-bold text-white transition hover:bg-accent-soft disabled:opacity-50"
             >
               Dive in
             </button>
@@ -239,9 +240,9 @@ export function DiveInPage() {
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-cyan-400/50 bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.3)] backdrop-blur-md"
+              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-accent-muted/50 bg-white/15 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-md"
             >
-              <span className="font-bubbly text-2xl font-bold text-cyan-300">1</span>
+              <span className="font-bubbly text-2xl font-bold text-white">1</span>
             </motion.div>
             <motion.div
               animate={{ y: [0, 6, 0] }}
@@ -251,9 +252,9 @@ export function DiveInPage() {
                 delay: 0.3,
                 ease: "easeInOut",
               }}
-              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-cyan-400/50 bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.3)] backdrop-blur-md"
+              className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-2 border-accent-muted/50 bg-white/15 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-md"
             >
-              <span className="font-bubbly text-2xl font-bold text-cyan-300">2</span>
+              <span className="font-bubbly text-2xl font-bold text-white">2</span>
             </motion.div>
           </div>
         </div>
@@ -264,46 +265,46 @@ export function DiveInPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#03045E]/70 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--modal-overlay)] p-4 backdrop-blur-sm"
           onClick={() => setShowBriefing(false)}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-cyan-400/50 bg-[#0077B6] p-6 shadow-2xl"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-accent-muted/50 bg-[var(--modal-bg)] p-6 shadow-2xl"
           >
-            <h2 className="font-bubbly text-center text-2xl font-bold text-cyan-300">
+            <h2 className="font-bubbly text-center text-3xl font-bold text-accent-muted md:text-4xl">
               Mission Briefing
             </h2>
-            <p className="mt-2 text-center text-sm text-white/80">
+            <p className="mt-2 text-center text-base text-white/95">
               Four challenges. Speed wins.
             </p>
-            <ul className="mt-6 space-y-4 text-sm text-white/90">
-              <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-                <strong className="text-cyan-300">Color Coral</strong> — The reef is changing colors! Click Y if the color of the text matches the word, or N if not.
+            <ul className="mt-6 space-y-4 text-base text-white/95">
+              <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+                <strong className="font-bubbly font-semibold text-accent-muted">Color Coral</strong> — The reef is changing colors! Click <KeyCap>Y</KeyCap> if the color of the text matches the word, or <KeyCap>N</KeyCap> if not.
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-                <strong className="text-cyan-300">Bubble Burst</strong> — A letter flashes inside a bubble on the grid. Pop it by typing the letter as fast as you can!
+              <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+                <strong className="font-bubbly font-semibold text-accent-muted">Bubble Burst</strong> — A letter flashes inside a bubble on the grid. Pop it by typing the letter as fast as you can!
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-                <strong className="text-cyan-300">Deep Dive</strong> — Check the math to keep your air! Type Y if the sum is right or N if it&apos;s wrong.
+              <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+                <strong className="font-bubbly font-semibold text-accent-muted">Deep Dive</strong> — Check the math to keep your air! Type <KeyCap>Y</KeyCap> if the sum is right or <KeyCap>N</KeyCap> if it&apos;s wrong.
               </li>
-              <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-                <strong className="text-cyan-300">Shark Attack</strong> — Press if SHARK present!
+              <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
+                <strong className="font-bubbly font-semibold text-accent-muted">Shark Attack</strong> — Press <KeyCap>Space</KeyCap> if SHARK present!
               </li>
             </ul>
             <button
               type="button"
               onClick={handleDiveNow}
-              className="mt-8 w-full rounded-xl bg-cyan-400 py-4 text-lg font-black uppercase tracking-wide text-[#000814] shadow-lg shadow-cyan-400/50 transition hover:bg-cyan-300"
+              className="mt-8 w-full rounded-xl bg-accent py-4 text-lg font-black uppercase tracking-wide text-[#0a1628] shadow-lg shadow-accent/40 transition hover:bg-accent-soft"
             >
               Dive into TUTORIAL
             </button>
             <button
               type="button"
               onClick={handleSkipTutorial}
-              className="mt-3 w-full rounded-xl border-2 border-cyan-400/60 bg-transparent py-3 text-base font-bold text-cyan-200 transition hover:bg-cyan-400/20"
+              className="mt-3 w-full rounded-xl border-2 border-accent-muted/60 bg-transparent py-3 text-base font-bold text-white/95 transition hover:bg-accent-muted/20"
             >
               Skip Tutorial
             </button>

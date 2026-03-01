@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
+import { KeyCap } from "@/components/KeyCap";
 
 const CUE_COUNT = 4;
 const CUE_DURATION_MS = 2000; // Only used for SHARK: success = no press for this long
@@ -200,8 +201,8 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
         </p>
       )}
       {!blankBeforeNext && (
-        <p className="mt-2 text-center text-sm font-bold tracking-wide text-cyan-200">
-          Press if SHARK present!
+        <p className="mt-2 text-center text-sm font-bold tracking-wide text-accent-muted">
+          Press <KeyCap>Space</KeyCap> if SHARK present!
         </p>
       )}
     </div>

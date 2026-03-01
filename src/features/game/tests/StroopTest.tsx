@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
+import { KeyCap } from "@/components/KeyCap";
 
 const WORDS = ["RED", "BLUE", "GREEN", "YELLOW"] as const;
 type WordColor = (typeof WORDS)[number];
@@ -133,9 +134,7 @@ export const StroopTest = ({ onComplete, onTutorialComplete }: StroopTestProps) 
       </div>
       {!isTutorial && (
         <p className="text-xs text-slate-300">
-          Click{" "}
-          <span className="font-semibold text-emerald-300">Y</span> if the color of the text matches the word, or{" "}
-          <span className="font-semibold text-red-300">N</span> if not.
+          Click <KeyCap>Y</KeyCap> if the color of the text matches the word, or <KeyCap>N</KeyCap> if not.
         </p>
       )}
     </div>
