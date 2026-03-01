@@ -138,7 +138,7 @@ export const SpeedGridTest = ({ onComplete, onTutorialComplete }: SpeedGridTestP
             key={i}
             type="button"
             onClick={() => handleCellClick(i)}
-            className={`flex aspect-square min-w-[2rem] items-center justify-center rounded-full text-lg font-bold shadow-[0_4px_12px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.1)] transition sm:min-w-[2.5rem] sm:text-xl ${
+            className={`flex aspect-square min-w-[2rem] items-center justify-center rounded-full text-xl font-bold shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.12)] transition sm:min-w-[2.5rem] sm:text-2xl ${
               wrongCellIndex === i
                 ? "bg-red-500 text-white ring-2 ring-red-400"
                 : activeIndex === i
@@ -151,13 +151,6 @@ export const SpeedGridTest = ({ onComplete, onTutorialComplete }: SpeedGridTestP
         ))}
       </div>
       {/* Progress only when not tutorial; no instruction text in tutorial */}
-      {!isTutorial && (
-        <div className="w-full shrink-0 text-center">
-          <p className="text-sm text-cyan-300/80">
-            Type or click the letter that appears • {currentTarget} / {TARGET_COUNT}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

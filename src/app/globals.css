@@ -3,6 +3,10 @@
 :root {
   --background: transparent;
   --foreground: #171717;
+  /* Opaque modal overlay and background so content behind is not visible */
+  --modal-overlay: rgba(0, 20, 40, 0.95);
+  --modal-bg: #0d4a6e;
+  --modal-border: rgba(34, 211, 238, 0.4);
 }
 
 @theme inline {
@@ -20,4 +24,20 @@ body {
 
 .font-bubbly {
   font-family: var(--font-fredoka), system-ui, sans-serif;
+}
+
+/* Shared onboarding modal dimensions — same size for briefing, tutorial, and complete */
+.onboarding-modal {
+  min-height: 70vh;
+  height: 70vh;
+  max-width: 32rem; /* max-w-lg */
+  width: 100%;
+}
+
+/* Gameplay challenge modal — fixed size, doesn't hug content */
+.game-modal {
+  min-height: 420px;
+  height: 420px;
+  width: 100%;
+  max-width: 32rem;
 }

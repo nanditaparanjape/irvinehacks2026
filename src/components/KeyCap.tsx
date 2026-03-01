@@ -7,15 +7,15 @@ const variantStyles: Record<
   { bg: string; text: string }
 > = {
   positive: {
-    bg: "bg-emerald-200",
-    text: "text-emerald-900",
+    bg: "bg-white",
+    text: "text-slate-800",
   },
   negative: {
-    bg: "bg-red-200",
-    text: "text-red-900",
+    bg: "bg-white",
+    text: "text-slate-800",
   },
   neutral: {
-    bg: "bg-slate-200",
+    bg: "bg-white",
     text: "text-slate-800",
   },
 };

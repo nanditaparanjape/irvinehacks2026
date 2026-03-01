@@ -68,41 +68,35 @@ export function TutorialFlow() {
     setTutorialSandboxPhase("COMPLETE");
   }, [setTutorialSandboxPhase]);
 
-  return (
-    <div className="flex min-h-[70vh] flex-col items-center gap-8">
-      <div className="flex shrink-0 justify-center pt-4 md:pt-6">
-        <span
-          className="font-bubbly text-3xl font-semibold uppercase tracking-wide text-accent-muted md:text-4xl"
-          style={{ textShadow: "0 0 20px rgba(77, 184, 196, 0.4)" }}
-        >
-          Tutorial {tutorialMission}/4
-        </span>
+  const skipButton = (
+    <button
+      type="button"
+      onClick={skipToTutorialComplete}
+      className="rounded-lg border border-cyan-500/50 bg-cyan-500/20 px-3 py-1.5 text-xs font-medium text-cyan-200 transition hover:bg-cyan-500/30"
+    >
+      Skip Tutorial
+    </button>
+  );
+
+  const modalContent = (
+    <>
+      <div className="absolute left-4 top-4 text-sm font-semibold text-cyan-300/90">
+        {tutorialMission}/4
       </div>
+      <div className="absolute bottom-4 right-4">{skipButton}</div>
 
       {tutorialStep === "preview" && (
-        <div className="flex w-full flex-1 flex-col items-center gap-8">
-          <div className="flex w-full justify-center">
-            <TutorialPreview mission={tutorialMission} onTryIt={setTutorialTryIt} />
-          </div>
-          <div className="mt-4 flex flex-col items-center gap-6 pb-8 md:pb-10">
-            <div className="h-px w-16 bg-cyan-500/30" aria-hidden />
-            <button
-              type="button"
-              onClick={skipToTutorialComplete}
-              className="rounded-xl border-2 border-cyan-400/80 bg-cyan-500/25 px-5 py-3 text-sm font-bold text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/40 hover:text-white hover:shadow-[0_0_22px_rgba(34,211,238,0.35)] md:px-6 md:py-3"
-            >
-              Skip Tutorial
-            </button>
-          </div>
+        <div className="flex w-full flex-1 flex-col items-center justify-center gap-6 overflow-y-auto pt-10">
+          <TutorialPreview mission={tutorialMission} onTryIt={setTutorialTryIt} />
         </div>
       )}
 
       {tutorialStep === "sandbox" && isTrying && (
-        <>
-          <div className="flex w-full max-w-2xl flex-1 flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-black/20 px-4 py-6 backdrop-blur-sm md:px-6">
+        <div className="flex w-full flex-1 flex-col items-center justify-center overflow-y-auto pt-10">
+          <div className="flex w-full flex-1 flex-col items-center justify-center rounded-2xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)]/80 px-4 py-6 md:px-6">
             {sandboxFlashVisible ? (
-              <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-[#0c4a6e] p-6">
-                <span className="font-bubbly text-center text-3xl font-semibold uppercase tracking-widest text-accent-muted md:text-5xl">
+              <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-cyan-500/30 bg-[var(--modal-bg)] p-6">
+                <span className="font-bubbly text-center text-3xl font-semibold uppercase tracking-widest text-cyan-300 md:text-5xl">
                   {activeTutorialPlayerName}, your turn!
                 </span>
               </div>
@@ -115,30 +109,20 @@ export function TutorialFlow() {
               </div>
             )}
           </div>
-          <div className="flex flex-col items-center gap-4 pb-8 md:pb-10">
-            <div className="h-px w-16 bg-cyan-500/30" aria-hidden />
-            <button
-              type="button"
-              onClick={skipToTutorialComplete}
-              className="rounded-xl border-2 border-cyan-400/80 bg-cyan-500/25 px-5 py-3 text-sm font-bold text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/40 hover:text-white hover:shadow-[0_0_22px_rgba(34,211,238,0.35)] md:px-6 md:py-3"
-            >
-              Skip Tutorial
-            </button>
-          </div>
-        </>
+        </div>
       )}
 
       {tutorialStep === "sandbox" && isComplete && (
-        <>
+        <div className="flex w-full flex-1 flex-col items-end justify-end gap-4 overflow-y-auto pt-10 pb-2">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center gap-4 rounded-2xl border border-cyan-500/30 bg-black/40 p-6"
+            className="w-full flex flex-col items-center gap-4 rounded-2xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)]/90 p-6"
           >
             <p className="mx-auto max-w-prose text-center text-lg font-medium text-cyan-200 md:text-xl">
               Tutorial {tutorialMission} complete
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="flex flex-row items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={setTutorialSandboxTryAgain}
@@ -150,7 +134,7 @@ export function TutorialFlow() {
                 <button
                   type="button"
                   onClick={setTutorialCompleteFromSandbox}
-                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500 px-6 py-3 font-bold text-[#000814] transition hover:bg-cyan-400"
+                  className="rounded-xl border-2 border-cyan-400 bg-cyan-500 px-6 py-3 font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
                 >
                   Complete tutorial
                 </button>
@@ -165,18 +149,16 @@ export function TutorialFlow() {
               )}
             </div>
           </motion.div>
-          <div className="flex flex-col items-center gap-4 pb-8 md:pb-10">
-            <div className="h-px w-16 bg-cyan-500/30" aria-hidden />
-            <button
-              type="button"
-              onClick={skipToTutorialComplete}
-              className="rounded-xl border-2 border-cyan-400/80 bg-cyan-500/25 px-5 py-3 text-sm font-bold text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/40 hover:text-white hover:shadow-[0_0_22px_rgba(34,211,238,0.35)] md:px-6 md:py-3"
-            >
-              Skip Tutorial
-            </button>
-          </div>
-        </>
+        </div>
       )}
+    </>
+  );
+
+  return (
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-6">
+      <div className="onboarding-modal relative flex w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-2xl">
+        {modalContent}
+      </div>
     </div>
   );
 }

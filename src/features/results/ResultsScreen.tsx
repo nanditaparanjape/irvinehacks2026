@@ -142,7 +142,7 @@ export function ResultsScreen() {
         return {
           test,
           text: `Tie at ${TEST_LABELS[test]}`,
-          winner: null as const,
+          winner: null,
         };
       });
   }, [
@@ -173,9 +173,9 @@ export function ResultsScreen() {
         <ResultsBubbleField scrollYProgress={scrollYProgress} />
       </motion.div>
 
-      {/* Section 1: Results + scroll CTA */}
+      {/* Section 1: Results + scroll CTA — crew-names style */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-between px-4 py-16">
-        <div className="flex w-full max-w-lg flex-1 flex-col justify-center gap-8 rounded-2xl border border-cyan-500/30 bg-black/40 p-6 shadow-2xl backdrop-blur-sm">
+        <div className="flex w-full max-w-lg flex-1 flex-col justify-center gap-8 rounded-3xl border-2 border-cyan-500/40 bg-white/15 p-6 shadow-2xl backdrop-blur-md">
           {/* Winner / Tie headline */}
           <div className="text-center">
             {isTie ? (
@@ -183,7 +183,7 @@ export function ResultsScreen() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="font-bubbly text-4xl font-black tracking-tight text-cyan-400 md:text-5xl"
+                className="font-bubbly text-4xl font-black tracking-tight text-cyan-300 md:text-5xl"
               >
                 It&apos;s a Tie!
               </motion.h1>
@@ -207,7 +207,7 @@ export function ResultsScreen() {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/60 bg-black/40 text-cyan-400 backdrop-blur-sm"
+                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 backdrop-blur-md"
                 >
                   <span className="text-xs font-semibold uppercase">Mascot</span>
                   <span className="text-sm font-bold">{p1Name}</span>
@@ -221,7 +221,7 @@ export function ResultsScreen() {
                     damping: 15,
                     delay: 0.1,
                   }}
-                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/60 bg-black/40 text-cyan-400 backdrop-blur-sm"
+                  className="flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 backdrop-blur-md"
                 >
                   <span className="text-xs font-semibold uppercase">Mascot</span>
                   <span className="text-sm font-bold">{p2Name}</span>
@@ -237,7 +237,7 @@ export function ResultsScreen() {
                     scale: { times: [0, 0.7, 1], duration: 0.5 },
                   },
                 }}
-                className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-cyan-400 bg-black/40 text-cyan-300 shadow-lg shadow-cyan-500/30 backdrop-blur-sm"
+                className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-cyan-500/50 bg-white/15 text-cyan-300 shadow-lg shadow-cyan-500/30 backdrop-blur-md"
               >
                 <motion.span
                   animate={{ scale: [1, 1.05, 1] }}
@@ -258,7 +258,7 @@ export function ResultsScreen() {
           </div>
 
           {/* Stats comparison */}
-          <p className="text-center text-xs text-slate-500">
+          <p className="text-center text-xs text-cyan-200/90">
             Collective Action Time over {MAX_ROUNDS} rounds
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-lg">
@@ -267,29 +267,29 @@ export function ResultsScreen() {
                 !isTie && winner === 1
                   ? "font-bold text-cyan-300"
                   : !isTie && winner === 2
-                    ? "text-fuchsia-400/90"
-                    : "text-slate-300"
+                    ? "text-cyan-200/80"
+                    : "text-cyan-200/90"
               }
             >
               {p1Name}: {player1TotalTime.toFixed(1)}s
             </span>
-            <span className="text-slate-500">vs</span>
+            <span className="text-cyan-300/70">vs</span>
             <span
               className={
                 !isTie && winner === 2
                   ? "font-bold text-cyan-300"
                   : !isTie && winner === 1
-                    ? "text-fuchsia-400/90"
-                    : "text-slate-300"
+                    ? "text-cyan-200/80"
+                    : "text-cyan-200/90"
               }
             >
               {p2Name}: {player2TotalTime.toFixed(1)}s
             </span>
           </div>
 
-          {/* Run breakdown — always visible */}
-          <div className="border-t border-cyan-500/20 pt-6">
-            <ul className="space-y-2 text-sm text-slate-300">
+          {/* Run breakdown */}
+          <div className="border-t border-cyan-500/30 pt-6">
+            <ul className="space-y-2 text-sm text-cyan-200/90">
               {breakdownLines.map(({ text }, i) => (
                 <li key={`breakdown-${i}`}>{text}</li>
               ))}
@@ -311,25 +311,33 @@ export function ResultsScreen() {
         </motion.div>
       </section>
 
-      {/* Section 2: Learn the Science card (same format as Mission Briefing) + New Game */}
+      {/* Section 2: Learn the Science — crew style + flip cards */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-32 pt-24">
-        <div className="w-full max-w-lg rounded-2xl border border-accent-muted/30 bg-black/40 p-6 shadow-2xl backdrop-blur-sm">
-          <h2 className="font-bubbly text-center text-2xl font-semibold text-accent-muted md:text-3xl">
+        <div className="w-full max-w-lg rounded-3xl border-2 border-cyan-500/40 bg-white/15 p-6 shadow-2xl backdrop-blur-md">
+          <h2 className="font-bubbly text-center text-2xl font-bold text-cyan-300 md:text-3xl">
             Learn the Science
           </h2>
-          <ul className="mt-6 space-y-4 text-base text-white/95">
-            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
-              <strong className="font-bubbly font-semibold text-accent-muted">Color Coral</strong> — The Stroop effect measures selective attention and cognitive control. When word meaning and ink color conflict, your brain must inhibit automatic reading; faster, accurate responses reflect stronger executive control.
-            </li>
-            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
-              <strong className="font-bubbly font-semibold text-accent-muted">Bubble Burst</strong> — Inspired by the Corsi block test, but with a twist: instead of memorizing a sequence, you react to each letter as it appears. This taps processing speed and visuospatial attention; your reaction time reflects how quickly you can locate a target and execute a response.
-            </li>
-            <li className="rounded-xl border border-cyan-500/30 bg-[#03045E]/25 p-3">
-              <strong className="text-cyan-300">Deep Dive</strong> — Mental arithmetic and working memory. Verifying equations under time pressure measures calculation speed and sustained attention; both accuracy and speed reflect how well you manage cognitive load.
-            </li>
-            <li className="rounded-xl border border-accent-muted/30 bg-[var(--modal-overlay)]/40 p-3">
-              <strong className="font-bubbly font-semibold text-accent-muted">Shark Attack</strong> — Response inhibition. Press when you see the shark; do nothing when it’s clear. This tests reaction time to a target and the ability to withhold when there’s no shark—key parts of executive function.
-            </li>
+          <p className="mt-1 text-center text-sm text-white/90">
+            Hover over a card to read the science
+          </p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            {[
+              { name: "Color Coral", science: "The Stroop effect measures selective attention and cognitive control. When word meaning and ink color conflict, your brain must inhibit automatic reading; faster, accurate responses reflect stronger executive control." },
+              { name: "Bubble Burst", science: "Inspired by the Corsi block test: you react to each letter as it appears. This taps processing speed and visuospatial attention; your reaction time reflects how quickly you can locate a target and execute a response." },
+              { name: "Deep Dive", science: "Mental arithmetic and working memory. Verifying equations under time pressure measures calculation speed and sustained attention; both accuracy and speed reflect how well you manage cognitive load." },
+              { name: "Shark Attack", science: "Response inhibition. Press when you see the shark; do nothing when it's clear. This tests reaction time to a target and the ability to withhold when there's no shark—key parts of executive function." },
+            ].map(({ name, science }) => (
+              <li key={name} className="group [perspective:600px]">
+                <div className="relative h-32 transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] sm:h-36">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-cyan-500/40 bg-white/20 p-4 [backface-visibility:hidden]">
+                    <strong className="font-bubbly text-center font-semibold text-cyan-300">{name}</strong>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl border-2 border-cyan-500/40 bg-cyan-400/20 p-3 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    <p className="text-center text-xs leading-snug text-white/95">{science}</p>
+                  </div>
+                </div>
+              </li>
+            ))}
           </ul>
           <div className="mt-8 flex justify-center">
             <motion.button
@@ -337,7 +345,7 @@ export function ResultsScreen() {
               onClick={handleNewGame}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="rounded-xl border-2 border-white/40 bg-white/10 px-8 py-4 text-lg font-bold uppercase tracking-wider text-white/90 transition hover:bg-white/20"
+              className="rounded-xl border-2 border-cyan-500/50 bg-cyan-500/90 px-8 py-3 text-lg font-bold text-[var(--modal-bg)] transition hover:bg-cyan-400"
             >
               New Game
             </motion.button>

@@ -164,7 +164,7 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
     feedbackFlash === "green"
       ? "ring-4 ring-cyan-500"
       : feedbackFlash === "red"
-        ? "ring-4 ring-fuchsia-500"
+        ? "ring-4 ring-red-500 shadow-[0_0_24px_rgba(239,68,68,0.5)]"
         : "ring-2 ring-cyan-500/30";
 
   const circleBg = "bg-cyan-500";
@@ -172,19 +172,10 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center gap-6 rounded-2xl border border-cyan-500/20 bg-black/30 px-8 py-10 backdrop-blur-sm transition-all duration-200 ${blankBeforeNext ? "ring-2 ring-cyan-500/20" : ringClass}`}
+      className={`relative flex flex-col items-center justify-center gap-6 rounded-2xl border border-cyan-500/30 bg-cyan-950/40 px-8 py-10 backdrop-blur-sm transition-all duration-200 ${blankBeforeNext ? "ring-2 ring-cyan-500/20" : ringClass}`}
     >
       {showWrongPopup && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-fuchsia-500/20">
-          <span className="rounded-lg bg-fuchsia-600 px-6 py-2 text-lg font-black uppercase tracking-wide text-white shadow-lg">
-            Wrong!
-          </span>
-        </div>
-      )}
-      {!blankBeforeNext && !isTutorial && (
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-          Shark Attack — Cue {cueIndex + 1} of {CUE_COUNT}
-        </p>
+        <div className="absolute inset-0 z-10 rounded-2xl bg-red-500/30" aria-hidden />
       )}
       <div className="flex min-h-[9rem] min-w-[9rem] items-center justify-center">
         {!blankBeforeNext && (
@@ -196,12 +187,12 @@ export const GoNoGoTest = ({ onComplete, onTutorialComplete }: GoNoGoTestProps) 
         )}
       </div>
       {!blankBeforeNext && message && (
-        <p className="text-sm font-semibold text-amber-400">
+        <p className="text-sm font-semibold text-cyan-200">
           {message}
         </p>
       )}
-      {!blankBeforeNext && (
-        <p className="mt-2 text-center text-sm font-bold tracking-wide text-accent-muted">
+      {!blankBeforeNext && isTutorial && (
+        <p className="mt-2 text-center text-sm font-bold tracking-wide text-cyan-200">
           Press <KeyCap>Space</KeyCap> if SHARK present!
         </p>
       )}

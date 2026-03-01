@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import type { RoundTestType } from "@/store/useGameStore";
 import { TUTORIAL_MISSION_TESTS } from "@/store/useGameStore";
 import { KeyCap } from "@/components/KeyCap";
+import { ChallengeExampleModal } from "./ChallengeDemos";
 
 const PREVIEW_CONTENT: Record<RoundTestType, { title: string; instruction: string }> = {
   stroop: {
@@ -53,22 +54,26 @@ export function TutorialPreview({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-6 rounded-2xl border border-cyan-500/30 bg-black/40 p-6"
+      className="flex w-full flex-col gap-5 rounded-2xl border-2 border-cyan-500/40 bg-white/10 p-5"
     >
-      <h2 className="font-bubbly text-center text-2xl font-semibold text-accent-muted md:text-3xl">
-        {title}
-      </h2>
+      <div className="rounded-xl border border-cyan-500/40 bg-white/10 p-4">
+        <h2 className="font-bubbly text-center text-2xl font-semibold text-cyan-300 md:text-3xl">
+          {title}
+        </h2>
+      </div>
 
-      <div className="mx-auto max-w-prose rounded-xl border border-accent-muted/25 bg-[#000814]/60 p-5">
-        <p className="text-xl leading-relaxed text-white/95 md:text-2xl">
+      <div className="rounded-xl border border-cyan-500/40 bg-white/10 p-4">
+        <p className="text-lg leading-relaxed text-white/95 md:text-xl">
           {instructionWithKeyCaps(instruction)}
         </p>
       </div>
 
+      <ChallengeExampleModal testType={testType} />
+
       <button
         type="button"
         onClick={onTryIt}
-        className="rounded-xl border-2 border-cyan-400 bg-cyan-500/30 py-4 text-xl font-bold text-cyan-200 transition hover:bg-cyan-500/50"
+        className="rounded-xl border-2 border-cyan-400 bg-cyan-500/50 py-4 text-xl font-bold text-cyan-200 transition hover:bg-cyan-500/70"
       >
         Try it
       </button>

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
-import { KeyCap } from "@/components/KeyCap";
 
 const INCORRECT_PENALTY_SEC = 0.5;
 
@@ -106,34 +105,19 @@ export const EquationTest = ({ onComplete, onTutorialComplete }: EquationTestPro
     feedback === "correct"
       ? "ring-4 ring-cyan-500"
       : feedback === "incorrect"
-        ? "ring-4 ring-fuchsia-500"
+        ? "ring-4 ring-red-500 shadow-[0_0_24px_rgba(239,68,68,0.5)]"
         : "ring-1 ring-cyan-500/30";
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center gap-6 rounded-xl border border-cyan-500/20 bg-black/30 px-6 py-8 text-center backdrop-blur-sm transition-all duration-200 ${ringClass}`}
+      className={`relative flex flex-col items-center justify-center gap-6 rounded-xl border border-cyan-500/30 bg-cyan-950/40 px-6 py-8 text-center backdrop-blur-sm transition-all duration-200 ${ringClass}`}
     >
       {feedback === "incorrect" && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-fuchsia-500/20">
-          <span className="rounded-lg bg-fuchsia-600 px-6 py-2 text-lg font-black uppercase tracking-wide text-white shadow-lg">
-            Wrong!
-          </span>
-        </div>
+        <div className="absolute inset-0 z-10 rounded-xl bg-red-500/30" aria-hidden />
       )}
-      {!isTutorial && (
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-          Deep Dive
-        </p>
-      )}
-      <p className="font-mono text-4xl font-bold tracking-tight text-slate-100 md:text-5xl">
+      <p className="font-mono text-4xl font-bold tracking-tight text-cyan-50 md:text-5xl">
         {equation.display}
       </p>
-      {!isTutorial && (
-        <div className="flex items-center gap-8 text-sm text-slate-500">
-          <span><KeyCap>Y</KeyCap> Correct</span>
-          <span><KeyCap>N</KeyCap> Incorrect</span>
-        </div>
-      )}
     </div>
   );
 };

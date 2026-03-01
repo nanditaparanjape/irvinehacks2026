@@ -67,12 +67,12 @@ export function TutorialCompleteScreen() {
   }
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-6">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="mx-auto w-full max-w-lg rounded-2xl border border-cyan-400/40 bg-[#0d4a6e] p-6 shadow-xl md:p-10"
+        className="onboarding-modal mx-auto flex w-full max-w-lg flex-col rounded-3xl border-2 border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-2xl md:p-10"
       >
         <div className="flex flex-col items-center gap-8 text-center">
           <h1 className="font-bubbly text-3xl font-black uppercase tracking-wide text-cyan-300 md:text-4xl">

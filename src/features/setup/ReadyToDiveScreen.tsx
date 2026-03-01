@@ -10,7 +10,7 @@ export function ReadyToDiveScreen() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col items-center justify-center gap-8 rounded-2xl border border-cyan-500/30 bg-black/40 p-8 backdrop-blur-sm"
+      className="flex flex-col items-center justify-center gap-8 rounded-2xl border-2 border-cyan-500/40 bg-[var(--modal-bg)]/90 p-8 backdrop-blur-sm"
     >
       <h2 className="text-center text-2xl font-black uppercase tracking-wide text-cyan-300 md:text-3xl">
         Ready to dive?
